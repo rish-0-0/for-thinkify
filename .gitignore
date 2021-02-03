@@ -1,0 +1,4 @@
+node_modules/
+db/psql/
+db/redis-data/
+db/redis.conf

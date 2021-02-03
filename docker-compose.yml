@@ -1,0 +1,43 @@
+version: '3.1'
+services: 
+  express:
+    build: ./app
+    working_dir: /usr/src/app
+    container_name: rest_api
+    command: npm start
+    ports:
+      - "4099:4192"
+    networks:
+      - app_network
+    links:
+      - redis
+      - database
+    volumes:
+      - /usr/src/app/node_modules
+      - ./app:/usr/src/app
+    depends_on:
+      - database
+      - redis
+    restart: always
+  database:
+    image: postgres:12
+    container_name: database
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    networks:
+      - app_network
+    volumes:
+      - $PWD/db/psql:/var/lib/postgresql/data
+  redis:
+    image: redis
+    container_name: redis
+    networks:
+      - app_network
+    volumes:
+      - $PWD/db/redis-data:/var/lib/redis
+      - $PWD/db/redis.conf:/usr/local/etc/redis/redis.conf
+
+networks:
+  app_network:
